@@ -2,6 +2,7 @@
 
 
 import argparse
+from gendiff.generator import generate_diff
 
 
 def main():
@@ -15,7 +16,8 @@ def main():
         metavar='FORMAT',
         help='set format of the output',
     )
-    parser.parse_args()
+    args = parser.parse_args()
+    print(generate_diff(args.first_file, args.second_file))
 
 
 # Check if the module runs as a program.
