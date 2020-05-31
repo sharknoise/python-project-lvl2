@@ -1,3 +1,6 @@
+env:
+  global:  # id given to the github repo by codeclimate
+    - CC_TEST_REPORTER_ID=e7b3df802409b3880544078a9caaf75e0858859e6d10f607bcbbafbf8384d82c
 language: python
 python:
   # we want to test our package on several versions of Python
