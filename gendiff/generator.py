@@ -28,7 +28,7 @@ def generate_diff(path_to_file1: str, path_to_file2: str) -> str:
 
 def read_json(path_to_file: str) -> dict:
     """Get the contents of a json file."""
-    with open(path_to_file) as json_file:
+    with open(path_to_file, 'r') as json_file:
         json_contents = json.load(json_file)
     return json_contents
 
@@ -67,8 +67,8 @@ def diff_table_to_str(diff_table: dict) -> str:  # noqa: WPS231
         all changed or deleted values are marked with a -
         all unchanged values are shown without any sign
     """
-    lines = []
-    for key, value_pair in diff_table.items():
+    lines = ['{']
+    for key, value_pair in sorted(diff_table.items()):
         # WPS forbids unpacking in the for statement
         old_value, new_value = value_pair
         if old_value is None and new_value is not None:
@@ -80,6 +80,7 @@ def diff_table_to_str(diff_table: dict) -> str:  # noqa: WPS231
         else:
             lines.append(create_line_with_sign('-', key, old_value))
             lines.append(create_line_with_sign('+', key, new_value))
+    lines.append('}')
     return '\n'.join(lines)
 
 
