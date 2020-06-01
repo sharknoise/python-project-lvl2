@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "SHARKVOICE_gendiff"
-version = "0.1.4"
+version = "0.1.5"
 description = "A CLI utility finding the differences in configuration files."
 authors = ["sharkvoice <sharknoise@gmail.com>"]
 packages = [
@@ -12,6 +12,7 @@ gendiff = "gendiff.scripts.gendiff:main"
 
 [tool.poetry.dependencies]
 python = "^3.6"
+pyyaml = "^5.3.1"
 
 [tool.poetry.dev-dependencies]
 wemake-python-styleguide = "^0.14.0"

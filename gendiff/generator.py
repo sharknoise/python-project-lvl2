@@ -6,7 +6,7 @@ or imported into your module.
 """
 
 
-import json
+from gendiff import parser
 
 
 def generate_diff(path_to_file1: str, path_to_file2: str) -> str:
@@ -20,17 +20,10 @@ def generate_diff(path_to_file1: str, path_to_file2: str) -> str:
     Returns:
         difference between files as a multiline string
     """
-    file1 = read_json(path_to_file1)
-    file2 = read_json(path_to_file2)
+    file1 = parser.get_data(path_to_file1)
+    file2 = parser.get_data(path_to_file2)
     diff_table = create_diff_table(file1, file2)
     return diff_table_to_str(diff_table)
-
-
-def read_json(path_to_file: str) -> dict:
-    """Get the contents of a json file."""
-    with open(path_to_file, 'r') as json_file:
-        json_contents = json.load(json_file)
-    return json_contents
 
 
 def create_diff_table(dict1: dict, dict2: dict) -> dict:
@@ -69,7 +62,7 @@ def diff_table_to_str(diff_table: dict) -> str:  # noqa: WPS231
     """
     lines = ['{']
     for key, value_pair in sorted(diff_table.items()):
-        # WPS forbids unpacking in the for statement
+        # WPS forbids unpacking a tuple in the for statement
         old_value, new_value = value_pair
         if old_value is None and new_value is not None:
             lines.append(create_line_with_sign('+', key, new_value))

@@ -5,3 +5,4 @@ dist/
 .venv/
 .vscode/
 coverage.xml
+.coverage

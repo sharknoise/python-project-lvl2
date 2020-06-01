@@ -12,5 +12,8 @@ def read_txt(txt_file: str) -> str:
     return text.rstrip('\n')
 
 
-def test_answer():
+def test_json():
     assert read_txt('./tests/fixtures/expected.txt') == generate_diff('./tests/fixtures/before.json', './tests/fixtures/after.json')
+
+def test_yaml():
+    assert read_txt('./tests/fixtures/expected.txt') == generate_diff('./tests/fixtures/before.yaml', './tests/fixtures/after.yaml')
