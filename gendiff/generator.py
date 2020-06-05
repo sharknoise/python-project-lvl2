@@ -1,12 +1,14 @@
 """
-Contains generate_diff function and private functions it requires.
+Contains generate_diff function and the functions it requires.
 
-generate_diff can be used by the gendiff CL script
+generate_diff can be used through the gendiff CL script
 or imported into your module.
 """
 
 
 from gendiff import parser
+from gendiff.ast_builder import build_ast
+from gendiff.renderers.jsonlike import jsonlike_render
 
 
 def generate_diff(path_to_file1: str, path_to_file2: str) -> str:
@@ -22,61 +24,4 @@ def generate_diff(path_to_file1: str, path_to_file2: str) -> str:
     """
     file1 = parser.get_data(path_to_file1)
     file2 = parser.get_data(path_to_file2)
-    diff_table = create_diff_table(file1, file2)
-    return diff_table_to_str(diff_table)
-
-
-def create_diff_table(dict1: dict, dict2: dict) -> dict:
-    """
-    Create a table with values from both dictionaries for comparison.
-
-    Args:
-        dict1: first dictionary
-        dict2: second dictionary
-
-    Returns:
-        a new dictionary with the following structure
-        key: (value from dict1, value from dict2)
-        if a key didn't exist in one of the dicts, the value will be None
-    """
-    all_keys = set(dict1.keys()) | set(dict2.keys())
-    diff_table = {}
-    for key in all_keys:
-        diff_table[key] = (dict1.get(key), dict2.get(key))
-    return diff_table
-
-
-# ignore WPS231 as the comlpexity is readable here
-def diff_table_to_str(diff_table: dict) -> str:  # noqa: WPS231
-    """
-    Transform a comparison table into a multiline string.
-
-    Args:
-        diff_table: a table created by create_diff_table
-
-    Returns:
-        a multiline string where:
-        all new values are marked with a +
-        all changed or deleted values are marked with a -
-        all unchanged values are shown without any sign
-    """
-    lines = ['{']
-    for key, value_pair in sorted(diff_table.items()):
-        # WPS forbids unpacking a tuple in the for statement
-        old_value, new_value = value_pair
-        if old_value is None and new_value is not None:
-            lines.append(create_line_with_sign('+', key, new_value))
-        elif old_value is not None and new_value is None:
-            lines.append(create_line_with_sign('-', key, old_value))
-        elif old_value == new_value:
-            lines.append(create_line_with_sign(' ', key, old_value))
-        else:
-            lines.append(create_line_with_sign('-', key, old_value))
-            lines.append(create_line_with_sign('+', key, new_value))
-    lines.append('}')
-    return '\n'.join(lines)
-
-
-def create_line_with_sign(sign: str, key, value) -> str:  # noqa: WPS110
-    """Return arguments as a string with a sign in the beginning."""
-    return '{0} {1}: {2}'.format(sign, str(key), str(value))
+    return jsonlike_render(build_ast(file1, file2))

@@ -5,4 +5,4 @@ Second project in the Hexlet Python Developer profession by student Dmitry Klime
 ##
 To install the package, copy the following into the terminal:  
 ```
-python3 -m pip install --user -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple sharkvoice-gendiff==0.1.4
+python3 -m pip install --user -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple sharkvoice-gendiff==0.2.1

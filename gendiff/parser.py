@@ -1,4 +1,4 @@
-"""Parse the contents of a json or yaml file."""
+"""Functions to parse the contents of json or yaml files."""
 
 import json
 import os
@@ -16,11 +16,11 @@ def get_data(path_to_file: str) -> dict:
     file_format = os.path.splitext(path_to_file)[1]
     if file_format not in SUPPORTED_FORMATS:
         raise Exception('This file format is not supported.')
-    return _parse_data(file_format, path_to_file)
+    return parse_data(file_format, path_to_file)
 
 
-def _parse_data(file_format: str, path_to_file: str) -> dict:
-    # Choose a loader depending on file extension.
+def parse_data(file_format: str, path_to_file: str) -> dict:
+    """Choose a loader depending on file extension."""
     with open(path_to_file, 'r') as parsed_file:
         if file_format == JSON:
             return json.load(parsed_file)

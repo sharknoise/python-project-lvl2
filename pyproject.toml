@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "SHARKVOICE_gendiff"
-version = "0.1.5"
+version = "0.2.1"
 description = "A CLI utility finding the differences in configuration files."
 authors = ["sharkvoice <sharknoise@gmail.com>"]
 packages = [
