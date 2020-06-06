@@ -5,6 +5,10 @@
     "setting3": true,
     "setting6": {
       "key": "value"
+    },
+    "site": {
+      "base": "b",
+      "case": "c"
     }
   },
   "group1": {

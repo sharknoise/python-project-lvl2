@@ -1,8 +1,8 @@
-"""Functions that renders a diff AST as a jsonlike string."""
+"""Functions that render a diff AST as a jsonlike string."""
 
 from typing import Any, Dict
 
-from gendiff.ast_builder import ADDED, CHANGED, CHILD, REMOVED, UNCHANGED
+from gendiff.ast_builder import ADDED, CHANGED, PARENT, REMOVED, UNCHANGED
 
 INDENT = '  '
 
@@ -13,7 +13,11 @@ def jsonlike_render(ast: Dict[str, Any], depth=1) -> str:
 
     Args:
         ast: a dict built by gendiff.ast_builder.build_ast
-        depth: the level of jsonlike nesting
+            or one of the nested dicts that represents a
+            part of the tree
+        depth: the level of jsonlike nesting, we change it
+            when we call the function recursively to render
+            a part of the tree
 
     Returns:
         a multiline string with jsonlike syntax
@@ -24,11 +28,11 @@ def jsonlike_render(ast: Dict[str, Any], depth=1) -> str:
         item_type = node_value.get('type')
         item_value = node_value.get('value')
         if item_type == CHANGED:
-            item_old = node_value.get('old_value')
-            item_new = node_value.get('new_value')
-            diff.append(format_node(indent, REMOVED, node_key, item_old))
-            diff.append(format_node(indent, ADDED, node_key, item_new))
-        elif item_type == CHILD:
+            old_value = node_value.get('old_value')
+            new_value = node_value.get('new_value')
+            diff.append(format_node(indent, REMOVED, node_key, old_value))
+            diff.append(format_node(indent, ADDED, node_key, new_value))
+        elif item_type == PARENT:
             diff.append('{indent}{sign} {key}: {{'.format(
                 indent=indent,
                 sign=UNCHANGED,
@@ -56,7 +60,7 @@ def get_formatted(element, indent):
 
 
 def format_node(indent: int, sign: str, node_key, node_value) -> str:
-    """Convert a leaf node into a single line string."""
+    """Convert a leaf node into a string."""
     return '{indent}{sign} {node_key}: {node_value}'.format(
         indent=indent,
         sign=sign,
@@ -67,12 +71,13 @@ def format_node(indent: int, sign: str, node_key, node_value) -> str:
 
 def format_block(properties: dict, block_indent: str) -> str:
     """
-    Convert all properties of a node into a multiline string.
+    Convert a complex value of a node into a multiline string.
 
     Args:
-        properties: a group of properties that don't have their own node_type
-                   as they were ADDED, REMOVED, CHANGED as a part of one node
-        block_indent: the indent of this node
+        properties: a group of properties that aren't represented
+            as separate nodes in the AST, because they were added,
+            removed or changed as a part of one node
+        block_indent: the indent of this node's key name
 
     Returns:
         a multiline string with the block of properties inside curly brackets

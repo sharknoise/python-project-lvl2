@@ -1,9 +1,11 @@
-"""A CLI utility finding the differences in configuration files."""
+"""A CLI utility that shows differences in configuration files."""
 
 
 import argparse
 
 from gendiff.generator import generate_diff
+
+DEFAULT_OUTPUT_FORMAT = 'jsonlike'
 
 
 def main():
@@ -14,11 +16,12 @@ def main():
     parser.add_argument(
         '-f',
         '--format',
-        metavar='FORMAT',
-        help='set format of the output',
+        metavar='FORMAT_NAME',
+        help='set format of the output (jsonlike or plain)',
+        default=DEFAULT_OUTPUT_FORMAT,
     )
     args = parser.parse_args()
-    print(generate_diff(args.first_file, args.second_file))
+    print(generate_diff(args.first_file, args.second_file, args.format))
 
 
 # Check if the module runs as a program.

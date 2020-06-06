@@ -33,8 +33,24 @@ def test_json():
     ) == read_txt('./tests/fixtures/expected.txt')
 
 
-def test_yaml():
+def test_yml():
     assert generate_diff(
-        './tests/fixtures/before.yaml',
-        './tests/fixtures/after.yaml',
+        './tests/fixtures/before.yml',
+        './tests/fixtures/after.yml',
     ) == read_txt('./tests/fixtures/expected.txt')
+
+
+def test_json_as_plain():
+    assert generate_diff(
+        './tests/fixtures/before.json',
+        './tests/fixtures/after.json',
+        format='plain',
+    ) == read_txt('./tests/fixtures/expected_plain.txt')
+
+
+def test_yml_as_plain():
+    assert generate_diff(
+        './tests/fixtures/before.yml',
+        './tests/fixtures/after.yml',
+        format='plain',
+    ) == read_txt('./tests/fixtures/expected_plain.txt')

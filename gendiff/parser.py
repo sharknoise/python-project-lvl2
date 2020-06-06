@@ -15,7 +15,7 @@ def get_data(path_to_file: str) -> dict:
     """Return the contents os a json or yaml file as a dict."""
     file_format = os.path.splitext(path_to_file)[1]
     if file_format not in SUPPORTED_FORMATS:
-        raise Exception('This file format is not supported.')
+        raise Exception(('Unsupported input format: {0}'.format(file_format)))
     return parse_data(file_format, path_to_file)
 
 

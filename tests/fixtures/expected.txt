@@ -10,6 +10,10 @@
       - setting6: {
             key: value
         }
+        site: {
+          - base: b
+            case: c
+        }
     }
     group1: {
       - baz: bas

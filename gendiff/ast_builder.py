@@ -6,7 +6,7 @@ ADDED = '+'
 REMOVED = '-'
 UNCHANGED = ' '
 CHANGED = 'changed'
-CHILD = 'child'
+PARENT = 'parent'
 
 
 
@@ -32,7 +32,7 @@ def create_node(key: str, old: Dict[str, Any], new: Dict[str, Any]) -> Dict[str,
         }
     elif isinstance(old_value, dict) and isinstance(new_value, dict):
         node = {
-            'type': CHILD,
+            'type': PARENT,
             'value': build_ast(old_value, new_value),
         }
     elif old_value == new_value:
