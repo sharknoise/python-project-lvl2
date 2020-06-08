@@ -1,4 +1,4 @@
-"""Test the functions from generator.py."""
+"""Test all non-script modules through generate_diff."""
 
 from gendiff.generator import generate_diff
 
