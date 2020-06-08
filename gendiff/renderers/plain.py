@@ -2,7 +2,7 @@
 
 from typing import Any, Dict
 
-from gendiff.ast_builder import ADDED, CHANGED, PARENT, REMOVED, UNCHANGED
+from gendiff.ast_builder import ADDED, CHANGED, PARENT, REMOVED
 
 
 def plain_render(ast: Dict[str, Any], property_path='') -> str:
@@ -19,33 +19,35 @@ def plain_render(ast: Dict[str, Any], property_path='') -> str:
         a multiline string describing the difference
     """
     diff = []
+
     for node_key, node_value in ast.items():
+
+        full_property_name = property_path + node_key
         item_type = node_value.get('type')
         item_value = node_value.get('value')
-        if item_type == UNCHANGED:
-            # we don't render unchanged properties
-            continue
-        elif item_type == PARENT:
-            diff.append(
-                plain_render(item_value, property_path + node_key + '.'),
-            )
+
+        if item_type == PARENT:
+            diff.append(plain_render(
+                item_value,
+                full_property_name + '.',  # noqa: WPS336 # + for readability
+            ))
         elif item_type == CHANGED:
             old_value = node_value.get('old_value')
             new_value = node_value.get('new_value')
-            diff.append("Property '{0}' was changed. From {1} to {2}".format(
-                property_path + node_key,
-                old_value,
-                new_value,
-            ))
+            diff.append(
+                "Property '{0}' was changed from '{1}' to '{2}'".format(
+                    full_property_name, old_value, new_value,
+                ),
+            )
         elif item_type == REMOVED:
             diff.append("Property '{0}' was removed".format(
-                property_path + node_key,
+                full_property_name,
             ))
         elif item_type == ADDED:
             diff.append("Property '{0}' was added with value '{1}'".format(
-                property_path + node_key,
-                get_formatted(item_value),
+                full_property_name, get_formatted(item_value),
             ))
+        # we don't render item_type == UNCHANGED in this renderer
     return '\n'.join(diff)
 
 

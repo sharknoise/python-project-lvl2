@@ -9,19 +9,21 @@ CHANGED = 'changed'
 PARENT = 'parent'
 
 
-def build_ast(old: Dict[str, Any], new: Dict[str, Any]) -> Dict[str, Any]:
+def build_ast(
+    old: Dict[str, Any], new: Dict[str, Any],
+) -> Dict[str, Any]:  # noqa: WPS221 # WPS bug, line complexity in hints
     """Build an Abstract Syntax Tree for the difference between 2 dicts."""
     all_keys = list(old.keys() | new.keys())
     return {key: create_node(key, old, new) for key in sorted(all_keys)}
 
 
-def create_node(
-            key: str, old: Dict[str, Any], new: Dict[str, Any],
-        ) -> Dict[str, Any]:
+def create_node(  # noqa: WPS231 # cognitive complexity isn't very high
+    key: str, old: Dict[str, Any], new: Dict[str, Any],
+) -> Dict[str, Any]:
     """Generate an AST node."""
     new_value = new.get(key)
     old_value = old.get(key)
-    if old_value is None:
+    if old_value is None:  # noqa: WPS223 # we use 4th elif to be explicit
         node = {
             'type': ADDED,
             'value': get_formatted(new_value),

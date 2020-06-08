@@ -44,7 +44,7 @@ def test_json_as_plain():
     assert generate_diff(
         './tests/fixtures/before.json',
         './tests/fixtures/after.json',
-        format='plain',
+        output_format='plain',
     ) == read_txt('./tests/fixtures/expected_plain.txt')
 
 
@@ -52,7 +52,7 @@ def test_yml_as_plain():
     assert generate_diff(
         './tests/fixtures/before.yml',
         './tests/fixtures/after.yml',
-        format='plain',
+        output_format='plain',
     ) == read_txt('./tests/fixtures/expected_plain.txt')
 
 
@@ -60,7 +60,7 @@ def test_json_as_json():
     assert generate_diff(
         './tests/fixtures/before.json',
         './tests/fixtures/after.json',
-        format='json',
+        output_format='json',
     ) == read_txt('./tests/fixtures/expected.json')
 
 
@@ -68,5 +68,5 @@ def test_yml_as_json():
     assert generate_diff(
         './tests/fixtures/before.yml',
         './tests/fixtures/after.yml',
-        format='json',
+        output_format='json',
     ) == read_txt('./tests/fixtures/expected.json')
