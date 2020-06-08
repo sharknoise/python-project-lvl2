@@ -1,3 +1,1 @@
-# -*- coding:utf-8 -*-
-
-"""Several games developed in the Hexlet Python Developer course."""
+"""CLI scripts that generate the difference between settings files."""

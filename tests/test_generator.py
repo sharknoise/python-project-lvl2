@@ -12,14 +12,14 @@ def read_txt(txt_file: str) -> str:
     return text.rstrip('\n')
 
 
-def test_json_flat():
+def test_flat_json():
     assert generate_diff(
         './tests/fixtures/before_flat.json',
         './tests/fixtures/after_flat.json',
     ) == read_txt('./tests/fixtures/expected_flat.txt')
 
 
-def test_yaml_flat():
+def test_flat_yaml():
     assert generate_diff(
         './tests/fixtures/before_flat.yaml',
         './tests/fixtures/after_flat.yaml',
@@ -54,3 +54,19 @@ def test_yml_as_plain():
         './tests/fixtures/after.yml',
         format='plain',
     ) == read_txt('./tests/fixtures/expected_plain.txt')
+
+
+def test_json_as_json():
+    assert generate_diff(
+        './tests/fixtures/before.json',
+        './tests/fixtures/after.json',
+        format='json',
+    ) == read_txt('./tests/fixtures/expected.json')
+
+
+def test_yml_as_json():
+    assert generate_diff(
+        './tests/fixtures/before.yml',
+        './tests/fixtures/after.yml',
+        format='json',
+    ) == read_txt('./tests/fixtures/expected.json')

@@ -8,6 +8,7 @@ or imported into your module.
 
 from gendiff import parser
 from gendiff.ast_builder import build_ast
+from gendiff.renderers.json import json_render
 from gendiff.renderers.jsonlike import jsonlike_render
 from gendiff.renderers.plain import plain_render
 
@@ -34,9 +35,11 @@ def generate_diff(path_to_file1: str,
         return jsonlike_render(build_ast(file1, file2))
     elif format == 'plain':
         return plain_render(build_ast(file1, file2))
+    elif format == 'json':
+        return json_render(build_ast(file1, file2))
     else:
         return (
-            'Unable to render the difference. '
+            'generate_diff unable to render the difference: '
             +
-            'Only "jsonlike" and "plain" output formats supported.'
+            'only "jsonlike", "json", and "plain" output formats supported'
         )

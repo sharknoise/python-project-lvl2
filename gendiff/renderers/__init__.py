@@ -1,3 +1,1 @@
-# -*- coding:utf-8 -*-
-
-"""Several games developed in the Hexlet Python Developer course."""
+"""Modules that render the difference of settings files."""
