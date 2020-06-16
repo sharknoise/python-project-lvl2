@@ -24,7 +24,7 @@ def jsonlike_render(ast: Dict[str, Any], depth=1) -> str:
     """
     diff = []
     indent = INDENT * depth
-    for node_key, node_value in ast.items():
+    for node_key, node_value in sorted(ast.items()):
         item_type = node_value.get('type')
         item_value = node_value.get('value')
         if item_type == CHANGED:

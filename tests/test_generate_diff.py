@@ -1,5 +1,7 @@
 """Test all non-script modules through generate_diff."""
 
+import json
+
 from gendiff.generator import generate_diff
 
 
@@ -56,17 +58,23 @@ def test_yml_as_plain():
     ) == read_txt('./tests/fixtures/expected_plain.txt')
 
 
-def test_json_as_json():
-    assert generate_diff(
+def test_json_as_json_via_parser():
+    with open('./tests/fixtures/expected.json', 'r') as expected:
+        expected_data = json.load(expected)
+    generate_diff_output = generate_diff(
         './tests/fixtures/before.json',
         './tests/fixtures/after.json',
         output_format='json',
-    ) == read_txt('./tests/fixtures/expected.json')
+    )
+    assert json.loads(generate_diff_output) == expected_data
 
 
-def test_yml_as_json():
-    assert generate_diff(
+def test_yml_as_json_via_parser():
+    with open('./tests/fixtures/expected.json', 'r') as expected:
+        expected_data = json.load(expected)
+    generate_diff_output = generate_diff(
         './tests/fixtures/before.yml',
         './tests/fixtures/after.yml',
         output_format='json',
-    ) == read_txt('./tests/fixtures/expected.json')
+    )
+    assert json.loads(generate_diff_output) == expected_data

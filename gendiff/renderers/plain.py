@@ -20,7 +20,7 @@ def plain_render(ast: Dict[str, Any], property_path='') -> str:
     """
     diff = []
 
-    for node_key, node_value in ast.items():
+    for node_key, node_value in sorted(ast.items()):
 
         full_property_name = property_path + node_key
         item_type = node_value.get('type')

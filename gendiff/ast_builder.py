@@ -14,7 +14,7 @@ def build_ast(
 ) -> Dict[str, Any]:  # noqa: WPS221 # WPS bug, line complexity in hints
     """Build an Abstract Syntax Tree for the difference between 2 dicts."""
     all_keys = list(old.keys() | new.keys())
-    return {key: create_node(key, old, new) for key in sorted(all_keys)}
+    return {key: create_node(key, old, new) for key in all_keys}
 
 
 def create_node(  # noqa: WPS231 # cognitive complexity isn't very high
