@@ -17,11 +17,11 @@ Example:
   
 By default, gendiff shows the difference with a jsonlike structure, but you can also change the output to real machine-readable JSON:  
 ```
-gendiff before.json after.json -f json
+gendiff -f json before.json after.json
 ```  
 or more human-friendly plain text:
 ```
-gendiff before.json after.json -f plain
+gendiff -f plain before.json after.json
 ```  
 Example:  
 [![asciicast](https://asciinema.org/a/AAWNQc7EpRJlHVmlaDSst94DA.svg)](https://asciinema.org/a/AAWNQc7EpRJlHVmlaDSst94DA)

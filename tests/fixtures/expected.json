@@ -12,7 +12,7 @@
       },
       "setting3": {
         "type": " ",
-        "value": "true"
+        "value": true
       },
       "setting4": {
         "type": "+",
