@@ -3,6 +3,6 @@
 import json
 
 
-def json_render(ast):
+def json_format(ast):
     """Render as JSON."""
     return json.dumps(ast, sort_keys=True, indent=2)

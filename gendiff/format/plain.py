@@ -5,7 +5,7 @@ from typing import Any, Dict
 from gendiff.ast_builder import ADDED, CHANGED, PARENT, REMOVED
 
 
-def plain_render(ast: Dict[str, Any], property_path='') -> str:
+def plain_format(ast: Dict[str, Any], property_path='') -> str:
     """
     Render a diff Abstract Syntax Tree as plain text.
 
@@ -27,7 +27,7 @@ def plain_render(ast: Dict[str, Any], property_path='') -> str:
         item_value = node_value.get('value')
 
         if item_type == PARENT:
-            diff.append(plain_render(
+            diff.append(plain_format(
                 item_value,
                 full_property_name + '.',  # noqa: WPS336 # + for readability
             ))

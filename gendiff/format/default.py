@@ -7,7 +7,7 @@ from gendiff.ast_builder import ADDED, CHANGED, PARENT, REMOVED, UNCHANGED
 INDENT = '  '
 
 
-def jsonlike_render(ast: Dict[str, Any], depth=1) -> str:
+def default_format(ast: Dict[str, Any], depth=1) -> str:
     """
     Render a diff Abstract Syntax Tree as a jsonlike string.
 
@@ -38,7 +38,7 @@ def jsonlike_render(ast: Dict[str, Any], depth=1) -> str:
                 sign=UNCHANGED,
                 key=node_key,
             ))
-            diff.append(jsonlike_render(item_value, depth + 2))
+            diff.append(default_format(item_value, depth + 2))
             diff.append('{indent}}}'.format(indent=indent + INDENT))
         elif item_type in {ADDED, REMOVED, UNCHANGED}:
             diff.append(format_node(
