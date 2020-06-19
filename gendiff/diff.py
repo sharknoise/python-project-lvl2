@@ -6,8 +6,8 @@ or imported into your module.
 """
 
 
-from gendiff import format, parser
-from gendiff.ast_builder import build_ast
+from gendiff import file, format
+from gendiff.ast import build_tree
 
 
 def generate_diff(
@@ -30,7 +30,7 @@ def generate_diff(
     Returns:
         difference between files as a multiline string
     """
-    file1 = parser.get_data(path_to_file1)
-    file2 = parser.get_data(path_to_file2)
+    file1 = file.get_data(path_to_file1)
+    file2 = file.get_data(path_to_file2)
 
-    return output_format(build_ast(file1, file2))
+    return output_format(build_tree(file1, file2))

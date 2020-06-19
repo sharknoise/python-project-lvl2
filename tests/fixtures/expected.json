@@ -3,29 +3,29 @@
     "type": "parent",
     "value": {
       "setting1": {
-        "type": " ",
+        "type": "unchanged",
         "value": "Value 1"
       },
       "setting2": {
-        "type": "-",
+        "type": "removed",
         "value": "200"
       },
       "setting3": {
-        "type": " ",
+        "type": "unchanged",
         "value": true
       },
       "setting4": {
-        "type": "+",
+        "type": "added",
         "value": "blah blah"
       },
       "setting5": {
-        "type": "+",
+        "type": "added",
         "value": {
           "key5": "value5"
         }
       },
       "setting6": {
-        "type": "-",
+        "type": "removed",
         "value": {
           "key": "value"
         }
@@ -34,11 +34,11 @@
         "type": "parent",
         "value": {
           "base": {
-            "type": "-",
+            "type": "removed",
             "value": "b"
           },
           "case": {
-            "type": " ",
+            "type": "unchanged",
             "value": "c"
           }
         }
@@ -49,24 +49,24 @@
     "type": "parent",
     "value": {
       "baz": {
-        "type": "changed",
+        "new_value": "bars",
         "old_value": "bas",
-        "new_value": "bars"
+        "type": "changed"
       },
       "foo": {
-        "type": " ",
+        "type": "unchanged",
         "value": "bar"
       }
     }
   },
   "group2": {
-    "type": "-",
+    "type": "removed",
     "value": {
       "abc": "12345"
     }
   },
   "group3": {
-    "type": "+",
+    "type": "added",
     "value": {
       "fee": "100500"
     }

@@ -2,9 +2,10 @@
 
 from typing import Any, Dict
 
-from gendiff.ast_builder import ADDED, CHANGED, PARENT, REMOVED, UNCHANGED
+from gendiff.ast import ADDED, CHANGED, PARENT, REMOVED, UNCHANGED
 
 INDENT = '  '
+marks = {ADDED: '+', REMOVED: '-', UNCHANGED: ' '}
 
 
 def default_format(ast: Dict[str, Any], depth=1) -> str:
@@ -12,7 +13,7 @@ def default_format(ast: Dict[str, Any], depth=1) -> str:
     Render a diff Abstract Syntax Tree as a jsonlike string.
 
     Args:
-        ast: a dict built by gendiff.ast_builder.build_ast
+        ast: a dict built by gendiff.ast.build_tree
             or one of the nested dicts that represents a
             part of the tree
         depth: the level of jsonlike nesting, we change it
@@ -30,12 +31,16 @@ def default_format(ast: Dict[str, Any], depth=1) -> str:
         if item_type == CHANGED:
             old_value = node_value.get('old_value')
             new_value = node_value.get('new_value')
-            diff.append(format_node(indent, REMOVED, node_key, old_value))
-            diff.append(format_node(indent, ADDED, node_key, new_value))
+            diff.append(
+                format_node(indent, marks[REMOVED], node_key, old_value),
+            )
+            diff.append(
+                format_node(indent, marks[ADDED], node_key, new_value),
+            )
         elif item_type == PARENT:
             diff.append('{indent}{sign} {key}: {{'.format(
                 indent=indent,
-                sign=UNCHANGED,
+                sign=marks[UNCHANGED],
                 key=node_key,
             ))
             diff.append(default_format(item_value, depth + 2))
@@ -43,7 +48,7 @@ def default_format(ast: Dict[str, Any], depth=1) -> str:
         elif item_type in {ADDED, REMOVED, UNCHANGED}:
             diff.append(format_node(
                 indent,
-                item_type,
+                marks[item_type],
                 node_key,
                 get_formatted(item_value, indent),
             ))
@@ -59,13 +64,13 @@ def get_formatted(element, indent):
     return element
 
 
-def format_node(indent: int, sign: str, node_key, node_value) -> str:
+def format_node(indent: str, sign: str, node_key, node_value) -> str:
     """Convert a leaf node into a string."""
     return '{indent}{sign} {node_key}: {node_value}'.format(
         indent=indent,
         sign=sign,
-        node_key=str(node_key),
-        node_value=str(node_value),
+        node_key=node_key,
+        node_value=node_value,
     )
 
 
@@ -89,7 +94,7 @@ def format_block(properties: dict, block_indent: str) -> str:
     for property_name, property_value in properties.items():
         block_lines.append(format_node(
             property_indent,
-            UNCHANGED,
+            marks[UNCHANGED],
             property_name,
             property_value,
         ))

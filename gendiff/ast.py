@@ -1,10 +1,10 @@
-"""Functions to build an AST."""
+"""Functions to build an Abstract Syntax Tree."""
 
 from typing import Any, Dict
 
-ADDED = '+'
-REMOVED = '-'
-UNCHANGED = ' '
+ADDED = 'added'
+REMOVED = 'removed'
+UNCHANGED = 'unchanged'
 CHANGED = 'changed'
 PARENT = 'parent'
 
@@ -14,11 +14,11 @@ OLD_VALUE = 'old_value'
 NEW_VALUE = 'new_value'
 
 
-def build_ast(
+def build_tree(
     old: Dict[str, Any], new: Dict[str, Any],
 ) -> Dict[str, Any]:  # noqa: WPS221 # WPS bug, line complexity in hints
     """Build an Abstract Syntax Tree for the difference between 2 dicts."""
-    ast = {}
+    tree = {}
 
     old_keys = old.keys()
     new_keys = new.keys()
@@ -27,13 +27,13 @@ def build_ast(
     kept_keys = old_keys & new_keys
 
     for removed_key in removed_keys:
-        ast[removed_key] = {
+        tree[removed_key] = {
             TYPE: REMOVED,
             VALUE: old[removed_key],
         }
 
     for added_key in added_keys:
-        ast[added_key] = {
+        tree[added_key] = {
             TYPE: ADDED,
             VALUE: new[added_key],
         }
@@ -42,21 +42,21 @@ def build_ast(
         old_value = old[kept_key]
         new_value = new[kept_key]
         if old_value == new_value:
-            ast[kept_key] = {
+            tree[kept_key] = {
                 TYPE: UNCHANGED,
                 VALUE: old_value,
             }
         elif isinstance(old_value, dict) and isinstance(new_value, dict):
-            ast[kept_key] = {
-                TYPE: PARENT,
-                VALUE: build_ast(
+            tree[kept_key] = {
+                TYPE: PARENT,  # has child(-ren) represented by nested dict(-s)
+                VALUE: build_tree(
                     old_value, new_value,
                 ),
             }
         elif old_value != new_value:
-            ast[kept_key] = {
+            tree[kept_key] = {
                 TYPE: CHANGED,
                 OLD_VALUE: old_value,
                 NEW_VALUE: new_value,
             }
-    return ast
+    return tree

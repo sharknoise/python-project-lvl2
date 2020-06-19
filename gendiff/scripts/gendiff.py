@@ -1,7 +1,7 @@
 """A CLI utility that shows differences in configuration files."""
 
 from gendiff.cli import parser
-from gendiff.generator import generate_diff
+from gendiff.diff import generate_diff
 
 
 def main():

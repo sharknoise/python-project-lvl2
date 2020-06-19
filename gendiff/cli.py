@@ -7,7 +7,7 @@ from gendiff import format
 
 
 def formatter(name):
-    """Choose a formatter function based on CLI option input."""
+    """Choose a formatter function based on CL option input."""
     if name == format.JSON:
         return format.json
     elif name == format.PLAIN:
@@ -28,6 +28,8 @@ parser.add_argument(
     metavar='FORMAT_NAME',
     help='set format of the output (default, json, or plain)',
     default=format.DEFAULT,
-    choices=format.FORMATTERS,
+    # convert user input string into one of the formatter functions
     type=formatter,
+    # argparse checks choices after the conversion, not before
+    choices=(format.json, format.plain, format.default),
 )

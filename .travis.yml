@@ -23,6 +23,7 @@ before_script:  # code coverage tool
 script:
   - make lint
   - make test-coverage
+  - make typecheck
 
 after_script:
   - ./cc-test-reporter format-coverage --debug --input-type coverage.py coverage.xml after-build $TRAVIS_TEST_RESULT

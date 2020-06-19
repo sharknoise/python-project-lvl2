@@ -2,7 +2,7 @@
 
 from typing import Any, Dict
 
-from gendiff.ast_builder import ADDED, CHANGED, PARENT, REMOVED
+from gendiff.ast import ADDED, CHANGED, PARENT, REMOVED
 
 
 def plain_format(ast: Dict[str, Any], property_path='') -> str:
@@ -13,7 +13,7 @@ def plain_format(ast: Dict[str, Any], property_path='') -> str:
         property_path: which nodes lead to this part of the tree;
             we change the default when we call the function
             recursively to render a part of the tree
-        ast: a dict built by gendiff.ast_builder.build_ast
+        ast: a dict built by gendiff.ast.build_tree
 
     Returns:
         a multiline string describing the difference

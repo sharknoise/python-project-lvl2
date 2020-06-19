@@ -10,4 +10,7 @@ test:
 test-coverage:
 	poetry run pytest tests --cov=gendiff --cov-report xml
 
-.PHONY: install lint test test-coverage
+typecheck:
+	poetry run mypy
+
+.PHONY: install lint test test-coverage typecheck
