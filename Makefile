@@ -11,6 +11,6 @@ test-coverage:
 	poetry run pytest tests --cov=gendiff --cov-report xml
 
 typecheck:
-	poetry run mypy
+	poetry run mypy gendiff
 
 .PHONY: install lint test test-coverage typecheck
