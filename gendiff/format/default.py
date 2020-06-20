@@ -2,18 +2,18 @@
 
 from typing import Any, Dict
 
-from gendiff.ast import ADDED, CHANGED, PARENT, REMOVED, UNCHANGED
+from gendiff import ast
 
 INDENT = '  '
-marks = {ADDED: '+', REMOVED: '-', UNCHANGED: ' '}
+marks = {ast.ADDED: '+', ast.REMOVED: '-', ast.UNCHANGED: ' '}
 
 
-def default_format(ast: Dict[str, Any], depth=1) -> str:
+def default_format(diff_tree: Dict[str, Any], depth=1) -> str:
     """
     Render a diff Abstract Syntax Tree as a jsonlike string.
 
     Args:
-        ast: a dict built by gendiff.ast.build_tree
+        diff_tree: a dict built by gendiff.ast.build_tree
             or one of the nested dicts that represents a
             part of the tree
         depth: the level of jsonlike nesting, we change it
@@ -25,27 +25,27 @@ def default_format(ast: Dict[str, Any], depth=1) -> str:
     """
     diff = []
     indent = INDENT * depth
-    for node_key, node_value in sorted(ast.items()):
-        item_type = node_value.get('type')
-        item_value = node_value.get('value')
-        if item_type == CHANGED:
+    for node_key, node_value in sorted(diff_tree.items()):
+        item_type = node_value[ast.TYPE]
+        item_value = node_value.get(ast.VALUE)  # CHANGED nodes don't have it
+        if item_type == ast.CHANGED:
             old_value = node_value.get('old_value')
             new_value = node_value.get('new_value')
             diff.append(
-                format_node(indent, marks[REMOVED], node_key, old_value),
+                format_node(indent, marks[ast.REMOVED], node_key, old_value),
             )
             diff.append(
-                format_node(indent, marks[ADDED], node_key, new_value),
+                format_node(indent, marks[ast.ADDED], node_key, new_value),
             )
-        elif item_type == PARENT:
+        elif item_type == ast.PARENT:
             diff.append('{indent}{sign} {key}: {{'.format(
                 indent=indent,
-                sign=marks[UNCHANGED],
+                sign=marks[ast.UNCHANGED],
                 key=node_key,
             ))
             diff.append(default_format(item_value, depth + 2))
             diff.append('{indent}}}'.format(indent=indent + INDENT))
-        elif item_type in {ADDED, REMOVED, UNCHANGED}:
+        elif item_type in {ast.ADDED, ast.REMOVED, ast.UNCHANGED}:
             diff.append(format_node(
                 indent,
                 marks[item_type],
@@ -94,7 +94,7 @@ def format_block(properties: dict, block_indent: str) -> str:
     for property_name, property_value in properties.items():
         block_lines.append(format_node(
             property_indent,
-            marks[UNCHANGED],
+            marks[ast.UNCHANGED],
             property_name,
             property_value,
         ))

@@ -2,10 +2,10 @@
 
 from typing import Any, Dict
 
-from gendiff.ast import ADDED, CHANGED, PARENT, REMOVED
+from gendiff import ast
 
 
-def plain_format(ast: Dict[str, Any], property_path='') -> str:
+def plain_format(diff_tree: Dict[str, Any], property_path='') -> str:
     """
     Render a diff Abstract Syntax Tree as plain text.
 
@@ -13,25 +13,25 @@ def plain_format(ast: Dict[str, Any], property_path='') -> str:
         property_path: which nodes lead to this part of the tree;
             we change the default when we call the function
             recursively to render a part of the tree
-        ast: a dict built by gendiff.ast.build_tree
+        diff_tree: a dict built by gendiff.ast.build_tree
 
     Returns:
         a multiline string describing the difference
     """
     diff = []
 
-    for node_key, node_value in sorted(ast.items()):
+    for node_key, node_value in sorted(diff_tree.items()):
 
         full_property_name = property_path + node_key
-        item_type = node_value.get('type')
-        item_value = node_value.get('value')
+        item_type = node_value[ast.TYPE]
+        item_value = node_value.get(ast.VALUE)  # CHANGED nodes don't have it
 
-        if item_type == PARENT:
+        if item_type == ast.PARENT:
             diff.append(plain_format(
                 item_value,
                 full_property_name + '.',  # noqa: WPS336 # + for readability
             ))
-        elif item_type == CHANGED:
+        elif item_type == ast.CHANGED:
             old_value = node_value.get('old_value')
             new_value = node_value.get('new_value')
             diff.append(
@@ -39,15 +39,15 @@ def plain_format(ast: Dict[str, Any], property_path='') -> str:
                     full_property_name, old_value, new_value,
                 ),
             )
-        elif item_type == REMOVED:
+        elif item_type == ast.REMOVED:
             diff.append("Property '{0}' was removed".format(
                 full_property_name,
             ))
-        elif item_type == ADDED:
+        elif item_type == ast.ADDED:
             diff.append("Property '{0}' was added with value '{1}'".format(
                 full_property_name, get_formatted(item_value),
             ))
-        # we don't render item_type == UNCHANGED in this renderer
+        # we don't render item_type == ast.UNCHANGED in this renderer
     return '\n'.join(diff)
 
 

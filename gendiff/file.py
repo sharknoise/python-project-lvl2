@@ -23,6 +23,13 @@ def get_data(path_to_file: str):
 
     with open(path_to_file, 'r') as parsed_file:
         if file_extension == JSON:
-            return json.load(parsed_file)
+            file_contents = json.load(parsed_file)
         elif file_extension in {YAML, YML}:
-            return yaml.safe_load(parsed_file)
+            file_contents = yaml.safe_load(parsed_file)
+        if not isinstance(file_contents, dict):
+            raise ValueError(
+                'Unsupported {0} structure: '.format(file_extension)
+                +
+                'not a configuration file.',
+            )
+        return file_contents

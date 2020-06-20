@@ -3,6 +3,6 @@
 import json
 
 
-def json_format(ast):
+def json_format(diff_tree):
     """Render as JSON."""
-    return json.dumps(ast, sort_keys=True, indent=2)
+    return json.dumps(diff_tree, sort_keys=True, indent=2)
