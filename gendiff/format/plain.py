@@ -5,54 +5,53 @@ from typing import Any, Dict
 from gendiff import ast
 
 
-def plain_format(diff_tree: Dict[str, Any], property_path='') -> str:
+def plain_format(diff_tree: Dict[str, Any]) -> str:
     """
     Render a diff Abstract Syntax Tree as plain text.
 
     Args:
-        property_path: which nodes lead to this part of the tree;
-            we change the default when we call the function
-            recursively to render a part of the tree
         diff_tree: a dict built by gendiff.ast.build_tree
 
     Returns:
         a multiline string describing the difference
     """
-    diff = []
+    lines = []
 
-    for node_key, node_value in sorted(diff_tree.items()):
+    def walk(tree_part, property_path):  # noqa: WPS430 # used to add 2nd arg
+        # property_path: which nodes lead to this part of the tree
+        for node_key, node_value in sorted(tree_part.items()):
+            full_property_name = property_path + node_key
+            item_type = node_value[ast.TYPE]
+            if item_type == ast.PARENT:
+                item_value = node_value[ast.VALUE]
+                walk(
+                    item_value,
+                    full_property_name + '.',  # noqa: WPS336 # + more readable
+                )
+            elif item_type == ast.CHANGED:
+                old_value = node_value[ast.OLD_VALUE]
+                new_value = node_value[ast.NEW_VALUE]
+                lines.append(
+                    "Property '{0}' was changed from '{1}' to '{2}'".format(
+                        full_property_name, old_value, new_value,
+                    ),
+                )
+            elif item_type == ast.REMOVED:
+                lines.append("Property '{0}' was removed".format(
+                    full_property_name,
+                ))
+            elif item_type == ast.ADDED:
+                if isinstance(node_value[ast.VALUE], dict):
+                    item_value = 'complex value'
+                else:
+                    item_value = node_value[ast.VALUE]
+                lines.append(
+                    "Property '{0}' was added with value '{1}'".format(
+                        full_property_name, item_value,
+                    ),
+                )
+            # we don't render item_type == ast.UNCHANGED in this formatter
 
-        full_property_name = property_path + node_key
-        item_type = node_value[ast.TYPE]
-        item_value = node_value.get(ast.VALUE)  # CHANGED nodes don't have it
+    walk(diff_tree, property_path='')
 
-        if item_type == ast.PARENT:
-            diff.append(plain_format(
-                item_value,
-                full_property_name + '.',  # noqa: WPS336 # + for readability
-            ))
-        elif item_type == ast.CHANGED:
-            old_value = node_value.get('old_value')
-            new_value = node_value.get('new_value')
-            diff.append(
-                "Property '{0}' was changed from '{1}' to '{2}'".format(
-                    full_property_name, old_value, new_value,
-                ),
-            )
-        elif item_type == ast.REMOVED:
-            diff.append("Property '{0}' was removed".format(
-                full_property_name,
-            ))
-        elif item_type == ast.ADDED:
-            diff.append("Property '{0}' was added with value '{1}'".format(
-                full_property_name, get_formatted(item_value),
-            ))
-        # we don't render item_type == ast.UNCHANGED in this renderer
-    return '\n'.join(diff)
-
-
-def get_formatted(unknown_type_value):
-    """Replace with str description when the argument is a dict."""
-    if isinstance(unknown_type_value, dict):
-        return 'complex value'
-    return unknown_type_value
+    return '\n'.join(lines)

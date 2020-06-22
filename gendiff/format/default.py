@@ -1,4 +1,4 @@
-"""Functions that render a diff AST as a jsonlike string."""
+"""Functions that render a lines AST as a jsonlike string."""
 
 from typing import Any, Dict
 
@@ -6,72 +6,67 @@ from gendiff import ast
 
 INDENT = '  '
 marks = {ast.ADDED: '+', ast.REMOVED: '-', ast.UNCHANGED: ' '}
+LINE_TEMPLATE = '{indent}{mark} {key}: {value}'
 
 
-def default_format(diff_tree: Dict[str, Any], depth=1) -> str:
+def default_format(diff_tree: Dict[str, Any]) -> str:
     """
-    Render a diff Abstract Syntax Tree as a jsonlike string.
+    Render a lines Abstract Syntax Tree as a jsonlike string.
 
     Args:
-        diff_tree: a dict built by gendiff.ast.build_tree
+        diff_tree: a dict built by genlines.ast.build_tree
             or one of the nested dicts that represents a
             part of the tree
-        depth: the level of jsonlike nesting, we change it
-            when we call the function recursively to render
-            a part of the tree
 
     Returns:
         a multiline string with jsonlike syntax
     """
-    diff = []
-    indent = INDENT * depth
-    for node_key, node_value in sorted(diff_tree.items()):
-        item_type = node_value[ast.TYPE]
-        item_value = node_value.get(ast.VALUE)  # CHANGED nodes don't have it
-        if item_type == ast.CHANGED:
-            old_value = node_value.get('old_value')
-            new_value = node_value.get('new_value')
-            diff.append(
-                format_node(indent, marks[ast.REMOVED], node_key, old_value),
-            )
-            diff.append(
-                format_node(indent, marks[ast.ADDED], node_key, new_value),
-            )
-        elif item_type == ast.PARENT:
-            diff.append('{indent}{sign} {key}: {{'.format(
-                indent=indent,
-                sign=marks[ast.UNCHANGED],
-                key=node_key,
-            ))
-            diff.append(default_format(item_value, depth + 2))
-            diff.append('{indent}}}'.format(indent=indent + INDENT))
-        elif item_type in {ast.ADDED, ast.REMOVED, ast.UNCHANGED}:
-            diff.append(format_node(
-                indent,
-                marks[item_type],
-                node_key,
-                get_formatted(item_value, indent),
-            ))
-    if depth == 1:
-        diff = ['{'] + diff + ['}']
-    return '\n'.join(diff)
+    lines = []
 
+    def walk(tree, depth):  # noqa: WPS430 # we use closure to add 2nd arg
+        # depth: whole tree starts from depth 1, nested tree parts start deeper
+        indent = INDENT * depth
+        for node_key, node_value in sorted(tree.items()):
+            item_type = node_value[ast.TYPE]
+            # we use get as CHANGED nodes have other keys instead of VALUE
+            item_value = node_value.get(ast.VALUE)
+            if item_type == ast.PARENT:
+                lines.append('{indent}{mark} {key}: {{'.format(
+                    indent=indent,
+                    mark=marks[ast.UNCHANGED],
+                    key=node_key,
+                ))
+                walk(item_value, depth + 2)
+                lines.append('{indent}}}'.format(indent=indent + INDENT))
+            elif item_type == ast.CHANGED:
+                old_value = node_value[ast.OLD_VALUE]
+                new_value = node_value[ast.NEW_VALUE]
+                lines.append(LINE_TEMPLATE.format(
+                    indent=indent,
+                    mark=marks[ast.REMOVED],
+                    key=node_key,
+                    value=old_value,
+                ))
+                lines.append(LINE_TEMPLATE.format(
+                    indent=indent,
+                    mark=marks[ast.ADDED],
+                    key=node_key,
+                    value=new_value,
+                ))
+            elif item_type in {ast.ADDED, ast.REMOVED, ast.UNCHANGED}:
+                if isinstance(item_value, dict):
+                    item_value = format_block(item_value, indent)
+                lines.append(LINE_TEMPLATE.format(
+                    indent=indent,
+                    mark=marks[item_type],
+                    key=node_key,
+                    value=item_value,
+                ))
 
-def get_formatted(element, indent):
-    """Return value as 1 item or a block of lines in curly brackets."""
-    if isinstance(element, dict):
-        return format_block(element, indent)
-    return element
+    walk(diff_tree, depth=1)
 
-
-def format_node(indent: str, sign: str, node_key, node_value) -> str:
-    """Convert a leaf node into a string."""
-    return '{indent}{sign} {node_key}: {node_value}'.format(
-        indent=indent,
-        sign=sign,
-        node_key=node_key,
-        node_value=node_value,
-    )
+    lines = ['{'] + lines + ['}']
+    return '\n'.join(lines)
 
 
 def format_block(properties: dict, block_indent: str) -> str:
@@ -92,11 +87,11 @@ def format_block(properties: dict, block_indent: str) -> str:
     property_indent = block_indent + INDENT*2
     clos_bracket_indent = block_indent + INDENT
     for property_name, property_value in properties.items():
-        block_lines.append(format_node(
-            property_indent,
-            marks[ast.UNCHANGED],
-            property_name,
-            property_value,
+        block_lines.append(LINE_TEMPLATE.format(
+            indent=property_indent,
+            mark=marks[ast.UNCHANGED],
+            key=property_name,
+            value=property_value,
         ))
-        block_lines.append('{indent}}}'.format(indent=clos_bracket_indent))
+    block_lines.append('{indent}}}'.format(indent=clos_bracket_indent))
     return '\n'.join(block_lines)
