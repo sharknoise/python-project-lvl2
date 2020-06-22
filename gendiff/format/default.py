@@ -55,43 +55,35 @@ def default_format(diff_tree: Dict[str, Any]) -> str:
                 ))
             elif item_type in {ast.ADDED, ast.REMOVED, ast.UNCHANGED}:
                 if isinstance(item_value, dict):
-                    item_value = format_block(item_value, indent)
-                lines.append(LINE_TEMPLATE.format(
-                    indent=indent,
-                    mark=marks[item_type],
-                    key=node_key,
-                    value=item_value,
-                ))
+                    # then it's a group of properties that aren't represented
+                    # as separate nodes in the AST, because they were added,
+                    # removed or changed as a part of one node,
+                    # but the project task is to format them as multiple lines
+                    lines.append(  # group name and the opening bracket
+                        '{indent}{mark} {key}: {{'.format(
+                            indent=indent,
+                            mark=marks[item_type],
+                            key=node_key,
+                        ))
+                    for property_name, property_value in item_value.items():
+                        lines.append(LINE_TEMPLATE.format(
+                            indent=indent + INDENT*2,
+                            mark=marks[ast.UNCHANGED],
+                            key=property_name,
+                            value=property_value,
+                        ))
+                    lines.append(  # closing bracket of the group
+                        '{indent}}}'.format(indent=indent + INDENT),
+                    )
+                else:
+                    lines.append(LINE_TEMPLATE.format(
+                        indent=indent,
+                        mark=marks[item_type],
+                        key=node_key,
+                        value=item_value,
+                    ))
 
     walk(diff_tree, depth=1)
 
     lines = ['{'] + lines + ['}']
     return '\n'.join(lines)
-
-
-def format_block(properties: dict, block_indent: str) -> str:
-    """
-    Convert a complex value of a node into a multiline string.
-
-    Args:
-        properties: a group of properties that aren't represented
-            as separate nodes in the AST, because they were added,
-            removed or changed as a part of one node
-        block_indent: the indent of this node's key name
-
-    Returns:
-        a multiline string with the block of properties inside curly brackets
-    """
-    block_lines = []
-    block_lines.append('{')
-    property_indent = block_indent + INDENT*2
-    clos_bracket_indent = block_indent + INDENT
-    for property_name, property_value in properties.items():
-        block_lines.append(LINE_TEMPLATE.format(
-            indent=property_indent,
-            mark=marks[ast.UNCHANGED],
-            key=property_name,
-            value=property_value,
-        ))
-    block_lines.append('{indent}}}'.format(indent=clos_bracket_indent))
-    return '\n'.join(block_lines)
