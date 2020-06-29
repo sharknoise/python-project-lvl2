@@ -24,7 +24,7 @@ def get_data(path_to_file: str):
     if file_extension == JSON:
         load_data = json.load
     elif file_extension in {YAML, YML}:
-        load_data = yaml.safe_load
+        load_data = yaml.safe_load  # type: ignore
 
     with open(path_to_file, 'r') as parsed_file:
         file_contents = load_data(parsed_file)
