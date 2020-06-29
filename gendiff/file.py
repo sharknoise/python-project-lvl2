@@ -21,15 +21,19 @@ def get_data(path_to_file: str):
     if file_extension not in SUPPORTED_FORMATS:
         raise ValueError('Unsupported file format: {0}'.format(file_extension))
 
+    if file_extension == JSON:
+        load_data = json.load
+    elif file_extension in {YAML, YML}:
+        load_data = yaml.safe_load
+
     with open(path_to_file, 'r') as parsed_file:
-        if file_extension == JSON:
-            file_contents = json.load(parsed_file)
-        elif file_extension in {YAML, YML}:
-            file_contents = yaml.safe_load(parsed_file)
-        if not isinstance(file_contents, dict):
-            raise ValueError(
-                'Unsupported {0} structure: '.format(file_extension)
-                +
-                'not a configuration file.',
-            )
-        return file_contents
+        file_contents = load_data(parsed_file)
+
+    if not isinstance(file_contents, dict):
+        raise ValueError(
+            'Unsupported {0} structure: '.format(file_extension)
+            +
+            'not a configuration file.',
+        )
+
+    return file_contents
