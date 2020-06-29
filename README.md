@@ -8,7 +8,7 @@ gendiff is a CLI utility that shows the difference between two JSON or YAML file
 ##
 To install the package, copy the following into the terminal:  
 ```
-python3 -m pip install --user -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple sharkvoice-gendiff==0.3.1
+python3 -m pip install --user -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple sharkvoice-gendiff==0.4.1
 ```  
 To run, type gendiff and the names of the files.  
   
