@@ -1,11 +1,14 @@
 """Functions that render a lines AST as a jsonlike string."""
 
+import types
 from typing import Any, Dict
 
 from gendiff import ast
 
 INDENT = '  '
-get_mark = {ast.ADDED: '+', ast.REMOVED: '-', ast.UNCHANGED: ' '}.get
+MARKS = types.MappingProxyType(
+    {ast.ADDED: '+', ast.REMOVED: '-', ast.UNCHANGED: ' '},
+)
 LINE_TEMPLATE = '{indent}{mark} {key}: {value}'
 
 
@@ -33,7 +36,7 @@ def default_format(diff_tree: Dict[str, Any]) -> str:
             if item_type == ast.PARENT:
                 lines.append('{indent}{mark} {key}: {{'.format(
                     indent=indent,
-                    mark=get_mark(ast.UNCHANGED),
+                    mark=MARKS[ast.UNCHANGED],
                     key=node_key,
                 ))
                 walk(item_value, depth + 2)
@@ -43,13 +46,13 @@ def default_format(diff_tree: Dict[str, Any]) -> str:
                 new_value = node_value[ast.NEW_VALUE]
                 lines.append(LINE_TEMPLATE.format(
                     indent=indent,
-                    mark=get_mark(ast.REMOVED),
+                    mark=MARKS[ast.REMOVED],
                     key=node_key,
                     value=old_value,
                 ))
                 lines.append(LINE_TEMPLATE.format(
                     indent=indent,
-                    mark=get_mark(ast.ADDED),
+                    mark=MARKS[ast.ADDED],
                     key=node_key,
                     value=new_value,
                 ))
@@ -62,13 +65,13 @@ def default_format(diff_tree: Dict[str, Any]) -> str:
                     lines.append(  # group name and the opening bracket
                         '{indent}{mark} {key}: {{'.format(
                             indent=indent,
-                            mark=get_mark(item_type),
+                            mark=MARKS[item_type],
                             key=node_key,
                         ))
                     for property_name, property_value in item_value.items():
                         lines.append(LINE_TEMPLATE.format(
                             indent=indent + INDENT*2,
-                            mark=get_mark(ast.UNCHANGED),
+                            mark=MARKS[ast.UNCHANGED],
                             key=property_name,
                             value=property_value,
                         ))
@@ -78,7 +81,7 @@ def default_format(diff_tree: Dict[str, Any]) -> str:
                 else:
                     lines.append(LINE_TEMPLATE.format(
                         indent=indent,
-                        mark=get_mark(item_type),
+                        mark=MARKS[item_type],
                         key=node_key,
                         value=item_value,
                     ))
